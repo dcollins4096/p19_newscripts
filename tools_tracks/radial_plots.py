@@ -14,7 +14,7 @@ import scipy.stats
 import radial_sphere 
 reload(radial_sphere)
 
-def mass_moment(prof,outname):
+def mass_moment(prof,outname,do_dI=True):
     ncol = 2
     nrow = 2
     fig,axes=plt.subplots(nrow,ncol, figsize=(12,12))
@@ -30,8 +30,8 @@ def mass_moment(prof,outname):
     cmap.set_over('b')
     cmap.set_under('g')
 
-
-    radial_sphere.dIdt(prof)
+    if do_dI == True:
+        radial_sphere.dIdt(prof)
     field = 'M'
     if field in prof.fields:
 
@@ -115,10 +115,11 @@ def mass_moment(prof,outname):
     af = axes.flatten()
     for ax in af:
         ax.set(xlim=af[0].get_xlim(), xlabel='t/tff',ylabel='R')
-        tsing = prof.mon.get_tsing( prof.core_id)
-        tsung = prof.mon.get_tsung( prof.core_id)
-        ax.axvline(tsing, c=[0.5]*4)
-        ax.axvline(tsung, c=[0.5]*4)
+        if do_dI == True:
+            tsing = prof.mon.get_tsing( prof.core_id)
+            tsung = prof.mon.get_tsung( prof.core_id)
+            ax.axvline(tsing, c=[0.5]*4)
+            ax.axvline(tsung, c=[0.5]*4)
     fig.tight_layout()
     fig.savefig(outname)
 

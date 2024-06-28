@@ -35,7 +35,7 @@ class profiler():
     def __init__(self,mon,core_id):
         self.mon=mon
         self.core_id=core_id
-        self.field_list=['M','I','dI','ddI','EK','EG','EB','ET']#,'SK','SB','ST','I','dI','ddI']
+        self.field_list=['M']#,'I','dI','ddI','EK','EG','EB','ET']#,'SK','SB','ST','I','dI','ddI']
         self.fields={}
     def run(self):
         frame_slice=slice(None)
@@ -47,14 +47,14 @@ class profiler():
         self.ddt  = 0.5*(self.tcen[2:]-self.tcen[:-2])
         self.ddtcen  =     (self.times[2:-2])
         core_id=self.core_id
-        ms = self.mon.get_ms(core_id, do_central=True, do_ge=True ,do_ke=True)  
+        ms = self.mon.get_ms(core_id, do_velocity=False)
         self.r_bins = np.geomspace( 2e-4, 32/128, 32)
         self.r_cen = 0.5*(self.r_bins[1:]+self.r_bins[:-1])
         for field in self.field_list:
             self.fields[field]=np.zeros([len(self.r_bins)-1,len(frame_list)])
         for nf,frame in enumerate(frame_list):
             sph = self.mon.get_sphere(core_id,frame,'rinf')
-            scrub = self.mon.scrub_sphere(core_id,frame,'rinf')
+            scrub = self.mon.scrub_sphere(core_id,frame,'rinf',do_velocity=False)
             dv = scrub.cell_volume
             RR = scrub.r
             DD = scrub.density
@@ -63,34 +63,34 @@ class profiler():
             DD_srt = DD[ORDER]
             dv_srt = dv[ORDER]
 
-            EG_srt = scrub.ge[ORDER]
-            EK_srt = scrub.ke_rel[ORDER]
-            EB_srt = sph['magnetic_energy'][ORDER]
-            ET_srt = DD_srt*np.log(DD_srt)
+            #EG_srt = scrub.ge[ORDER]
+            #EK_srt = scrub.ke_rel[ORDER]
+            #EB_srt = sph['magnetic_energy'][ORDER]
+            #ET_srt = DD_srt*np.log(DD_srt)
 
             M_srt = DD_srt*dv_srt
-            I_srt = DD_srt*RR_srt**2
+            #I_srt = DD_srt*RR_srt**2
 
             M_cuml = np.cumsum( M_srt )
-            V_cuml = np.cumsum( dv_srt)
-            EG_cuml = np.cumsum( EG_srt*dv_srt)
-            EK_cuml = np.cumsum( EK_srt*dv_srt)
-            EB_cuml = np.cumsum( EB_srt*dv_srt)
-            ET_cuml = np.cumsum( ET_srt*dv_srt)
-            I_cuml = np.cumsum(I_srt*dv_srt)
+            #V_cuml = np.cumsum( dv_srt)
+            #EG_cuml = np.cumsum( EG_srt*dv_srt)
+            #EK_cuml = np.cumsum( EK_srt*dv_srt)
+            #EB_cuml = np.cumsum( EB_srt*dv_srt)
+            #ET_cuml = np.cumsum( ET_srt*dv_srt)
+            #I_cuml = np.cumsum(I_srt*dv_srt)
 
             Mbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, M_cuml, bins=self.r_bins,statistic='mean')
-            EGbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EG_cuml, bins=self.r_bins,statistic='mean')
-            EKbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EK_cuml, bins=self.r_bins,statistic='mean')
-            EBbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EB_cuml, bins=self.r_bins,statistic='mean')
-            ETbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, ET_cuml, bins=self.r_bins,statistic='mean')
-            Ibinned, bins, ind = scipy.stats.binned_statistic(RR_srt, I_cuml, bins=self.r_bins, statistic='mean')
+            #EGbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EG_cuml, bins=self.r_bins,statistic='mean')
+            #EKbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EK_cuml, bins=self.r_bins,statistic='mean')
+            #EBbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, EB_cuml, bins=self.r_bins,statistic='mean')
+            #ETbinned, bins, ind = scipy.stats.binned_statistic(RR_srt, ET_cuml, bins=self.r_bins,statistic='mean')
+            #Ibinned, bins, ind = scipy.stats.binned_statistic(RR_srt, I_cuml, bins=self.r_bins, statistic='mean')
             self.fields['M'][:,nf]=Mbinned
-            self.fields['I'][:,nf]=Ibinned
-            self.fields['EK'][:,nf]=EKbinned
-            self.fields['EG'][:,nf]=EGbinned
-            self.fields['EB'][:,nf]=EBbinned
-            self.fields['ET'][:,nf]=ETbinned
+            #self.fields['I'][:,nf]=Ibinned
+            #self.fields['EK'][:,nf]=EKbinned
+            #self.fields['EG'][:,nf]=EGbinned
+            #self.fields['EB'][:,nf]=EBbinned
+            #self.fields['ET'][:,nf]=ETbinned
 
 
 class surface():
