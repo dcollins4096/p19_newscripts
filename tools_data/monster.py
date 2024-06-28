@@ -80,16 +80,19 @@ class boo():
         ind.sort()
         return ind
 
-    def scrub_sphere(self,core_id,frame,sphere_type):
+    def scrub_sphere(self,core_id,frame,sphere_type, do_velocity=True):
         sph= self.get_sphere(core_id,frame,sphere_type)
         ms = self.get_ms(core_id)
         ds = self.get_ds(frame)
         nf = self.get_frame_index(frame)
 
-        vel = ds.arr(ms.vcentral[:,nf], 'code_velocity')
-        scrub = other_scrubber.scrubber(sph, reference_velocity = vel)
-        scrub.compute_ke_rel()
-        scrub.compute_ge()
+        if do_velocity == True:
+            vel = ds.arr(ms.vcentral[:,nf], 'code_velocity')
+            scrub = other_scrubber.scrubber(sph, reference_velocity = vel)
+            scrub.compute_ke_rel()
+            scrub.compute_ge()
+        else:
+            scrub = other_scrubber.scrubber(sph, reference_velocity=None)
         return scrub
 
     def get_sphere(self,core_id,frame,sphere_type):

@@ -47,7 +47,7 @@ class profiler():
         self.ddt  = 0.5*(self.tcen[2:]-self.tcen[:-2])
         self.ddtcen  =     (self.times[2:-2])
         core_id=self.core_id
-        ms = self.mon.get_ms(core_id, do_central=True, do_ge=True,do_ke=True)
+        ms = self.mon.get_ms(core_id, do_central=True, do_ge=True ,do_ke=True)  
         self.r_bins = np.geomspace( 2e-4, 32/128, 32)
         self.r_cen = 0.5*(self.r_bins[1:]+self.r_bins[:-1])
         for field in self.field_list:
